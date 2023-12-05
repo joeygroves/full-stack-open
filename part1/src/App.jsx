@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 const App = () => {
+  console.log('Hello from component')
   return (
     <div>
       <p>Hello World!</p>
