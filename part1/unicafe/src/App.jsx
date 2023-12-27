@@ -1,6 +1,19 @@
 import { useState } from 'react'
 
-const Display = props => <div>{props.heading} {props.statistic} {props.text}</div>
+const Display = (props) => {
+
+  if (props.heading === "positive") {
+    return (
+      <div>{props.heading} {props.statistic} %</div>
+    )
+  }
+
+  return (
+    <div>{props.heading} {props.statistic}</div>
+  )
+}
+
+
 
 const Button = (props) => {
   return (
@@ -10,29 +23,51 @@ const Button = (props) => {
   )
 }
 
+const Statistics = (props) => {
+  const totalFeedback = props.feedback.good + props.feedback.neutral + props.feedback.bad;
+  const averageScore = (props.feedback.good + props.feedback.neutral*0 + props.feedback.bad*-1) / totalFeedback;
+  const positivePercentage = (props.feedback.good / totalFeedback) * 100;
+
+  if (totalFeedback === 0) {
+    return (
+      <div>No feedback given</div>
+    )
+  }
+
+  return(
+    <div>
+      <table>
+        <tbody>
+          <Display heading="good" statistic={props.feedback.good} />
+          <Display heading="neutral" statistic={props.feedback.neutral} />
+          <Display heading="bad" statistic={props.feedback.bad} />
+          <Display heading="all" statistic={totalFeedback} />
+          <Display heading="average" statistic={averageScore} />
+          <Display heading="positive" statistic={positivePercentage} />
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const App = () => {
   // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-  const totalFeedback = good + neutral + bad;
-  const averageScore = (good + neutral*0 + bad*-1) / totalFeedback;
-  const positivePercentage = (good / totalFeedback) * 100;
-
+  const [feedback, setFeedback] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0
+  })
 
   const handleGood = () => {
-    setGood(good + 1);
-    console.log('new good value', good + 1);
+    setFeedback({...feedback, good: feedback.good + 1});
   }
 
   const handleNeutral = () => {
-    setNeutral(neutral + 1);
-    console.log('new neutral value', neutral + 1);
+    setFeedback({...feedback, neutral: feedback.neutral + 1});
   }
 
   const handleBad = () => {
-    setBad(bad + 1);
-    console.log('new bad value', bad + 1);
+    setFeedback({...feedback, bad: feedback.bad + 1});
   }
 
   return (
@@ -42,12 +77,7 @@ const App = () => {
       <Button handleClick={handleNeutral} text="neutral"/>
       <Button handleClick={handleBad} text="bad"/>
       <h2>statistics</h2>
-      <Display heading="good" statistic={good} />
-      <Display heading="neutral" statistic={neutral} />
-      <Display heading="bad" statistic={bad} />
-      <Display heading="all" statistic={totalFeedback} />
-      <Display heading="average" statistic={averageScore} />
-      <Display heading="positive" statistic={positivePercentage} text="%"/>
+      <Statistics feedback={feedback} />
       
     </div>
   )
