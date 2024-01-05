@@ -1,5 +1,41 @@
 import { useState } from 'react'
 
+const Filter = ({ searchName, handleSearch, personsToShow }) => {
+  return(
+    <div>
+        filter shown with <input value={searchName} onChange={handleSearch}/>
+      </div>
+  )
+}
+
+const PersonsForm = ({ newName, newNumber, addContact, handleNameChange, handleNumberChange }) => {
+  return(
+    <form onSubmit={addContact}>
+        <div>
+          name: <input value={newName} onChange={handleNameChange}/>
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange}/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
+const Persons = ({ persons }) => {
+  return(
+    <div>
+      <ul>
+        {persons.map(person =>
+          <li key={person.id}>{person.name} {person.number}</li>
+        )}
+      </ul>
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -9,10 +45,11 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [searchName, setSearchName] = useState('')
 
   const addContact = (event) => {
     event.preventDefault()
-    console.log('button clicked', event.target)
+    //console.log('button clicked', event.target)
 
     if (persons.find(person => person.name === newName)) {
       alert(`${newName} is already added to phonebook`)
@@ -30,44 +67,41 @@ const App = () => {
       }
     }
 
-    
-
   const handleNameChange = (event) => {
-    //console.log(event.target.value)
     setNewName(event.target.value)
   }
 
   const handleNumberChange = (event) => {
-    //console.log(event.target.value)
     setNewNumber(event.target.value)
   }
+
+  const handleSearch = (event) => {
+    console.log(event.target.value)
+    setSearchName(event.target.value)
+  }
+
+  const personsToShow = searchName
+    ? persons
+    : persons.filter(person => person.name === searchName)
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input />
-      </div>
-      <h2>add a new</h2>
-      <form onSubmit={addContact}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Filter 
+        searchName={searchName} 
+        handleSearch={handleSearch} 
+        personsToShow={personsToShow} 
+      />
+      <h2>Add a new</h2>
+      <PersonsForm 
+        newName={newName} 
+        newNumber={newNumber} 
+        addContact={addContact} 
+        handleNameChange={handleNameChange} 
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <ul>
-        {persons.map(person =>
-          <li key={person.id}>
-            {person.name} {person.number}
-          </li>
-        )}
-      </ul>
+      <Persons persons={persons} />
     </div>
   )
 }
