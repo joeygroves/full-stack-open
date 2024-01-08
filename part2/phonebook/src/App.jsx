@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonsForm from './components/PersonsForm'
 import Persons from './components/Persons'
@@ -18,6 +17,16 @@ const App = () => {
       setPersons(initialPersons)
     })
   }, [])
+  
+  const handleSearch = (event) => {
+    console.log(event.target.value)
+    setSearchName(event.target.value)
+  }
+
+  const personsToShow = searchName
+    ? persons
+    : persons.filter(person => person.name === searchName)
+
 
   const addContact = (event) => {
     event.preventDefault()
@@ -52,33 +61,35 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const handleSearch = (event) => {
-    console.log(event.target.value)
-    setSearchName(event.target.value)
-  }
+  const removePerson = id => {
 
-  const personsToShow = searchName
-    ? persons
-    : persons.filter(person => person.name === searchName)
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter 
-        searchName={searchName} 
-        handleSearch={handleSearch} 
-        personsToShow={personsToShow} 
-      />
+        <Filter 
+          searchName={searchName} 
+          handleSearch={handleSearch} 
+          personsToShow={personsToShow} 
+        />
       <h2>Add a new</h2>
-      <PersonsForm 
-        newName={newName} 
-        newNumber={newNumber} 
-        addContact={addContact} 
-        handleNameChange={handleNameChange} 
-        handleNumberChange={handleNumberChange}
-      />
+        <PersonsForm 
+          newName={newName} 
+          newNumber={newNumber} 
+          addContact={addContact} 
+          handleNameChange={handleNameChange} 
+          handleNumberChange={handleNumberChange}
+        />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+        <ul>
+          {persons.map(person =>
+            <Persons
+              key={person.id}
+              person={person}
+            />
+          )}
+        </ul>
     </div>
   )
 }
