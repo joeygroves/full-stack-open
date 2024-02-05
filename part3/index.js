@@ -24,6 +24,9 @@ let persons = [
     }
 ]
 
+let currentDate = new Date();
+
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -34,7 +37,7 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/info', (request, response) => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p>
-    <p></p>
+    <p>${currentDate}</p>
     `)
 })
 
