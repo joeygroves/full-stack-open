@@ -68,6 +68,8 @@ const generateId = (max) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
   
+  const nameExists = persons.some(p => p.name === body.name)
+  
   if (!body.name) {
     return response.status(400).json({
       error: 'name missing'
@@ -76,6 +78,11 @@ app.post('/api/persons', (request, response) => {
   else if (!body.number) {
     return response.status(400).json({
       error: 'number missing'
+    })
+  }
+  else if (nameExists) {
+    return response.status(400).json({
+      error: 'name already exists, must be unique'
     })
   }
 

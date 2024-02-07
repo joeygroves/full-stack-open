@@ -5,3 +5,12 @@ content-type: application/json
     "name": "Joe",
     "number": "6-67"
 }
+
+###
+POST http://localhost:3001/api/persons/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Arto Hellas",
+    "number": "6-67"
+}
