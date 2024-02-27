@@ -88,10 +88,15 @@ app.get('/info', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id).then(persons => {
-    response.json(persons)
+    if (persons) {
+      response.json(persons)
+    } else {
+      response.status(404).end()
+    }
   })
+  .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -126,11 +131,11 @@ app.post('/api/persons', (request, response) => {
 
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(persons => persons.id !== id)
-
-  response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id).then(result => {
+    response.status(204).end()
+  })
+  .catch(error => next(error))
 })
 
 // handler of requests with unknown endpoint
