@@ -1,17 +1,39 @@
-require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const cors = require('cors')
-const Person = require('./models/person')
+const mongoose = require('mongoose')
+require('dotenv').config()
 
-app.use(cors())
+const Person = require('./models/person')
 
 app.use(express.static('dist'))
 
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+const cors = require('cors')
+
+app.use(cors())
 app.use(express.json())
+app.use(requestLogger)
 app.use(morgan('tiny'))
 
+/*
 let persons = [
     { 
       "id": 1,
@@ -34,9 +56,19 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+*/
 
-let currentDate = new Date();
+//let currentDate = new Date();
 
+/*
+const generateId = (max) => {
+  return Math.floor(Math.random() * max)
+}
+*/
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -61,17 +93,6 @@ app.get('/api/persons/:id', (request, response) => {
     response.json(persons)
   })
 })
-
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(persons => persons.id !== id)
-
-  response.status(204).end()
-})
-
-const generateId = (max) => {
-  return Math.floor(Math.random() * max)
-}
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
@@ -105,7 +126,19 @@ app.post('/api/persons', (request, response) => {
 
 })
 
-const PORT = process.env.PORT || 3001
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id)
+  persons = persons.filter(persons => persons.id !== id)
+
+  response.status(204).end()
+})
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+// handler of requests with result to errors
+app.use(errorHandler)
+
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
