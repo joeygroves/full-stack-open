@@ -21,7 +21,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
@@ -99,22 +101,12 @@ app.get('/api/persons/:id', (request, response, next) => {
   .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   
   const nameExists = persons.some(p => p.name === body.name)
   
-  if (body.name === undefined) {
-    return response.status(400).json({
-      error: 'name missing'
-    })
-  }
-  else if (body.number === undefined) {
-    return response.status(400).json({
-      error: 'number missing'
-    })
-  }
-  else if (nameExists) {
+  if (nameExists) {
     return response.status(400).json({
       error: 'name already exists, must be unique'
     })
@@ -128,6 +120,7 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
 
 })
 
