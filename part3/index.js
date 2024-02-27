@@ -104,13 +104,13 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
   
-  const nameExists = persons.some(p => p.name === body.name)
+  /*const nameExists = persons.some(p => p.name === body.name)
   
   if (nameExists) {
     return response.status(400).json({
       error: 'name already exists, must be unique'
     })
-  }
+  }*/
 
   const person = new Person({
     name: body.name,
